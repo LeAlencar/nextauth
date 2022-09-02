@@ -24,8 +24,6 @@ type AuthProviderProps = {
   children: ReactNode
 }
 
-
-
 export const AuthContext = createContext({} as AuthContextData)
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -45,7 +43,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   }, [])
   
-
   async function signIn({email, password}: SignInCredentials) {
     try {
       const response = await api.post('/sessions', {
