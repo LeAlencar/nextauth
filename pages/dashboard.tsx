@@ -1,7 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { destroyCookie } from "nookies"
 import { useContext, useEffect } from "react"
 import { AuthContext } from "../contexts/AuthContext"
-import { api } from "../services/api"
+import { setupAPIClient } from "../services/api"
+import { api } from "../services/apiClient"
+import { AuthTokenError } from "../services/errors/AuthTokenError"
+import { withSSRAuth } from "../utils/withSSRAuth"
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext)
@@ -14,3 +18,25 @@ export default function Dashboard() {
     <h1>DashBoard: {user?.email}</h1>
   )
 }
+
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+  const apiClient = setupAPIClient(ctx)
+
+  try {
+    const response = await apiClient.get('/me')
+
+  } catch(err) {
+    destroyCookie(ctx, 'nextauth.token')
+    destroyCookie(ctx, 'nextauth.refreshToken')
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    }
+  }
+  
+  return {
+    props: {}
+  }
+})
